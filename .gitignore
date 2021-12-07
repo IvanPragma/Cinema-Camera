@@ -1,0 +1,5 @@
+.idea/
+saves/
+cinema_camera/__pycache__/
+cinema_camera/tools/__pycache__/
+*.pyc
