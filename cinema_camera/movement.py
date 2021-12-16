@@ -44,23 +44,3 @@ class Movement:
             'y': try_calculate(lambda x: x ** (self.speed_move_cf.y * self.speed_graph_cf)),
             'z': try_calculate(lambda x: x ** (self.speed_move_cf.z * self.speed_graph_cf)),
         }
-
-        self.active: bool = False
-
-    def start(self, previous_movement: Union[Movement, None]) -> None:
-        """Start move.
-
-        Using move_to with our attributes.
-
-        On start self.active will be set to True,
-        and we fail if will try to start Movement again.
-
-        After end of movement self.active will be set to False,
-        so we can start it again, if it need.
-        """
-
-        if self.active:
-            raise RuntimeError("Movement is already active")
-        self.active = True
-
-        app.cinema_camera.camera.move_to(self, previous_movement)

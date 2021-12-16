@@ -7,15 +7,7 @@ from ba import app
 
 from cinema_camera.ui.movement import MovementWidget
 
-# from bastd.ui.popup import PopupMenuWindow, PopupWindow
-# from bastd.ui.confirm import ConfirmWindow
-# from bastd.ui.colorpicker import ColorPickerExact
-# from bastd.ui.mainmenu import MainMenuWindow
-# from bastd.ui.playlist.editcontroller import PlaylistEditController
-# import bastd.ui.party
-
-
-from typing import List, Tuple, Sequence, Optional, Dict, Any, Union, TYPE_CHECKING, cast
+from typing import Optional
 
 from cinema_camera.movement import Movement
 
@@ -24,7 +16,6 @@ class EditMovementsWindow:
     """Window for edit movements and their attributes."""
 
     def __init__(self, root) -> None:
-        # _ba.set_party_window_open(True)
         self.movement_widgets = []
         self._selected_movement = None
         self.root = root
@@ -39,7 +30,7 @@ class EditMovementsWindow:
                     550 if uiscale is ba.UIScale.MEDIUM else 600)
 
         self._transition_out: Optional[str] = 'out_scale'
-        scale_origin: Optional[Tuple[float, float]] = 10
+        scale_origin: Optional[tuple[float, float]] = 10
 
         transition: str = 'in_scale'
         scale_origin = None  # HM
@@ -205,7 +196,7 @@ class EditMovementsWindow:
     def _start(self) -> None:
         self.root_widget.delete()
         self.root.get_root_widget().delete()
-        app.cinema_camera.camera.move()
+        app.cinema_camera.camera.start_move()
 
     def _cancel(self) -> None:
         ba.containerwidget(
