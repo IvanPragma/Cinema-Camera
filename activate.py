@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ba
 import _ba
 
 from ba import app, Plugin
@@ -7,6 +8,7 @@ from ba import app, Plugin
 from bastd.ui.mainmenu import MainMenuWindow
 from bastd.ui.party import PartyWindow as OriginalPartyWindow
 
+from cinema_camera.settings import load_settings
 from cinema_camera.tools.redefine import redefine, redefine_class
 
 from cinema_camera.camera import Camera
@@ -34,13 +36,18 @@ class CinemaCamera(Plugin):
     Owner: Ms Company - BombSquad
     """
 
-    __version__ = '1.1'
+    __version__ = '1.2'
 
     camera: Camera = None
 
     def on_app_launch(self) -> None:
         """Plugin start point."""
 
-        self.camera = Camera()
+        if app.build_number < 20427:
+            ba.screenmessage('Cinema Camera не может работать на версии ниже 1.6.7.\nПожалуйста, обновите игру.',
+                             color=(.8, .1, .1))
+            raise RuntimeError('Cinema Camera can\'t work on a BombSquad whose version is lower than 1.6.7')
+
+        self.camera = Camera(load_settings())
 
         return main(self)

@@ -39,6 +39,8 @@ class Movement:
         self.speed_move_cf: ba.Vec3 = speed_move_cf
         self.apply_previous_velocity: bool = apply_previous_velocity
 
+        self.active: bool = False  # Only for non-polynom run
+
         self.graph: Dict[(str, callable)] = {
             'x': try_calculate(lambda x: x ** (self.speed_move_cf.x * self.speed_graph_cf)),
             'y': try_calculate(lambda x: x ** (self.speed_move_cf.y * self.speed_graph_cf)),

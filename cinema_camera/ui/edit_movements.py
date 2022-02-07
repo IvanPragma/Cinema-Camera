@@ -10,6 +10,7 @@ from cinema_camera.ui.movement import MovementWidget
 from typing import Optional
 
 from cinema_camera.movement import Movement
+from cinema_camera.ui.settings import SettingsWidget
 
 
 class EditMovementsWindow:
@@ -75,13 +76,21 @@ class EditMovementsWindow:
                                                   color=bg_color,
                                                   on_activate_call=self._on_add_movement_press)
 
-        delete_movement_button = ba.buttonwidget(parent=self.root_widget,  # Back button
+        delete_movement_button = ba.buttonwidget(parent=self.root_widget,
                                                  position=(self.width - 170, self.height - 85),
                                                  size=(125, 30),
                                                  label='Delete movement',
                                                  button_type='square',
                                                  color=bg_color,
                                                  on_activate_call=self._on_delete_movement_press)
+
+        ba.buttonwidget(parent=self.root_widget,
+                        position=(self.width - 210, self.height - 85),
+                        size=(25, 25),
+                        icon=ba.gettexture('settingsIcon'),
+                        button_type='square',
+                        color=bg_color,
+                        on_activate_call=self._on_settings_press)
 
         ba.buttonwidget(parent=self.root_widget,
                         autoselect=True,
@@ -149,14 +158,17 @@ class EditMovementsWindow:
             new_num = app.cinema_camera.camera.movements[-1].num + 1
         return new_num
 
-    def _on_add_movement_press(self):
+    def _on_add_movement_press(self) -> None:
         new_num = self._get_new_movement_num()
         MovementWidget(self, new_num)
 
-    def _on_movement_select(self, num):
+    def _on_movement_select(self, num) -> None:
         self._selected_movement = num
 
-    def _on_edit_movement_press(self, mvm: Movement):
+    def _on_settings_press(self) -> None:
+        settings_widget = SettingsWidget(self, app.cinema_camera.camera.settings)
+
+    def _on_edit_movement_press(self, mvm: Movement) -> None:
         if mvm not in app.cinema_camera.camera.movements:
             raise RuntimeError('Movement are not found')
 
@@ -168,7 +180,7 @@ class EditMovementsWindow:
         mvm_widget.speed_graph_cf = mvm.speed_graph_cf
         mvm_widget.smooth_move_graph_cf = mvm.speed_move_cf
 
-    def _on_delete_movement_press(self):
+    def _on_delete_movement_press(self) -> None:
         if not self._selected_movement:
             ba.screenmessage("Movement are not selected", color=(0.8, 0.1, 0.1))
             return
