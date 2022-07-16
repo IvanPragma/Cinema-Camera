@@ -27,7 +27,7 @@ def main(plugin: Plugin) -> None:
     redefine_class(OriginalPartyWindow, PartyWindow)
 
 
-# ba_meta require api 6
+# ba_meta require api 7
 # ba_meta export plugin
 class CinemaCamera(Plugin):
     """Shoot beautiful videos together with cinema camera
