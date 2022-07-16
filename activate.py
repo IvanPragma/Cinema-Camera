@@ -40,7 +40,7 @@ class CinemaCamera(Plugin):
 
     camera: Camera = None
 
-    def on_app_launch(self) -> None:
+    def on_app_running(self) -> None:
         """Plugin start point."""
 
         if app.build_number < 20427:
