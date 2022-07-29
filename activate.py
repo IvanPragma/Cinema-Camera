@@ -36,7 +36,7 @@ class CinemaCamera(Plugin):
     Owner: Ms Company - BombSquad
     """
 
-    __version__ = '1.2'
+    __version__ = '1.3'
 
     camera: Camera = None
 
