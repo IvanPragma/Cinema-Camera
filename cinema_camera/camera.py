@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import Optional, Union
 
-import ba
-import _ba
+import _babase
+import _bascenev1
+import bauiv1 as bui
+import bascenev1 as bs
 
 from cinema_camera.movement import Movement
 from cinema_camera.tools.calculate import newton_polynomial
@@ -19,22 +21,22 @@ class Camera:
     """
 
     @property
-    def position(self) -> ba.Vec3:
-        return ba.Vec3(_ba.get_camera_position())
+    def position(self) -> bs.Vec3:
+        return bs.Vec3(_babase.get_camera_position())
 
     @position.setter
-    def position(self, value: Optional[ba.Vec3]) -> ba.Vec3:
-        assert isinstance(value, ba.Vec3)
-        _ba.set_camera_position(value.x, value.y, value.z)
+    def position(self, value: Optional[bs.Vec3]) -> bs.Vec3:
+        assert isinstance(value, bs.Vec3)
+        _babase.set_camera_position(value.x, value.y, value.z)
 
     @property
-    def target(self) -> ba.Vec3:
-        return ba.Vec3(_ba.get_camera_target())
+    def target(self) -> bs.Vec3:
+        return bs.Vec3(_babase.get_camera_target())
 
     @target.setter
-    def target(self, value: Optional[ba.Vec3]) -> ba.Vec3:
-        assert isinstance(value, ba.Vec3)
-        _ba.set_camera_target(value.x, value.y, value.z)
+    def target(self, value: Optional[bs.Vec3]) -> bs.Vec3:
+        assert isinstance(value, bs.Vec3)
+        _babase.set_camera_target(value.x, value.y, value.z)
 
     def __init__(self, settings: dict):
         self.settings: dict = settings
@@ -93,13 +95,18 @@ class Camera:
             prev_mv = None
             prev_trg = (0, 0, 0)
             prev_pos = (0, 0, 0)
-            for i, mv in enumerate(self.movements):
-                ba.timer(time, ba.Call(self.animate, prev_mv, mv, 'position', prev_pos, mv.position, mv.during_time))
-                ba.timer(time, ba.Call(self.animate, prev_mv, mv, 'target', prev_trg, mv.target, mv.during_time))
-                prev_mv = mv
-                prev_trg = mv.target
-                prev_pos = mv.position
-                time += mv.during_time
+            with _bascenev1.get_foreground_host_activity().context:
+                for i, mv in enumerate(self.movements):
+                    bs.timer(time, bui.Call(self.animate, prev_mv, mv,
+                                            'position', prev_pos, mv.position,
+                                            mv.during_time))
+                    bs.timer(time, bui.Call(self.animate, prev_mv, mv, 'target',
+                                            prev_trg, mv.target,
+                                            mv.during_time))
+                    prev_mv = mv
+                    prev_trg = mv.target
+                    prev_pos = mv.position
+                    time += mv.during_time
 
     def animate(self,
                 prev_movement: Union[Movement, None],
@@ -111,36 +118,40 @@ class Camera:
 
         if prev_movement:
             if prev_movement.active:
-                return ba.timer(0.01, ba.Call(self.animate,
-                                              prev_movement,
-                                              movement,
-                                              attribute,
-                                              start_position,
-                                              end_position,
-                                              total_time))
+                with _bascenev1.get_foreground_host_activity().context:
+                    return bs.timer(0.01, bs.Call(self.animate,
+                                                  prev_movement,
+                                                  movement,
+                                                  attribute,
+                                                  start_position,
+                                                  end_position,
+                                                  total_time))
         movement.active = True
 
         if total_time <= 0:
             return setattr(self, attribute, end_position)
 
         time = 0.0
-        difference = ba.Vec3(end_position) - ba.Vec3(start_position)
+        difference = bs.Vec3(end_position) - bs.Vec3(start_position)
 
         def _update():
             nonlocal time
 
             array = getattr(self, attribute)
             for i in range(3):
-                array[i] = start_position[i] + difference[i] * (time / total_time)
+                array[i] = (start_position[i] + difference[i]
+                            * (time / total_time))
             setattr(self, attribute, array)
 
-            if time / total_time<1.0:
+            if time / total_time < 1.0:
                 time += 0.01
-                ba.timer(0.01, _update)
+                with _bascenev1.get_foreground_host_activity().context:
+                    bs.timer(0.01, _update)
             else:
                 movement.active = False
 
-        ba.timer(0.01, _update)
+        with _bascenev1.get_foreground_host_activity().context:
+            bs.timer(0.01, _update)
 
     def _move(self) -> None:
         """Move camera process.
@@ -154,10 +165,12 @@ class Camera:
             self.position = self.position_at_time(self.current_time)
             self.target = self.target_at_time(self.current_time)
 
-            if self.current_time>=self.end_time:
+            if self.current_time >= self.end_time:
                 self.active = False
                 return
 
-            _ba.timer(0.01, _update)
+            with _bascenev1.get_foreground_host_activity().context:
+                bs.timer(0.01, _update)
 
-        _ba.timer(0.01, _update)
+        with _bascenev1.get_foreground_host_activity().context:
+            bs.timer(0.01, _update)

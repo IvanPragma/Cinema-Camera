@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-
-import ba
+import bascenev1 as bs
 
 from typing import Union
 
@@ -85,7 +84,7 @@ def try_calculate(function: callable, default_value: float = 0.0) -> any:
     def decorator(x: float):
         try:
             return function(x)
-        except:
+        except Exception:
             return default_value
 
     return decorator
@@ -93,8 +92,8 @@ def try_calculate(function: callable, default_value: float = 0.0) -> any:
 
 def _poly_newton_coefficient(t: list, x: list, y: list, z: list) -> list:
     """
-    x: list or np array contanining x data points
-    y: list or np array contanining y data points
+    x: list or np array containing x data points
+    y: list or np array containing y data points
     """
 
     m = len(t)
@@ -117,7 +116,8 @@ def _poly_newton_coefficient(t: list, x: list, y: list, z: list) -> list:
     return [x, y, z]
 
 
-def newton_polynomial(time_data: list, x_data: list, y_data: list, z_data: list) -> callable:
+def newton_polynomial(time_data: list, x_data: list, y_data: list,
+                      z_data: list) -> callable:
     """
     x_data: data points at x
     y_data: data points at y
@@ -126,7 +126,7 @@ def newton_polynomial(time_data: list, x_data: list, y_data: list, z_data: list)
     a_list = _poly_newton_coefficient(time_data, x_data, y_data, z_data)
     n = len(time_data) - 1  # Degree of polynomial
 
-    def result(t: float) -> ba.Vec3:
+    def result(t: float) -> bs.Vec3:
         res = []
         for a in a_list:
             p = float(a[n])
@@ -135,6 +135,6 @@ def newton_polynomial(time_data: list, x_data: list, y_data: list, z_data: list)
                 p = a[n - k] + (t - time_data[n - k])*p
             res.append(p)
 
-        return ba.Vec3(res)
+        return bs.Vec3(res)
 
     return result
