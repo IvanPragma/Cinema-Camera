@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 
-def redefine(obj: object, name: str, new: callable, new_name: str = None) -> None:
+def redefine(obj: object, name: str, new: callable,
+             new_name: str = None) -> None:
     if not new_name:
         new_name = name + '_old'
     if hasattr(obj, name):
